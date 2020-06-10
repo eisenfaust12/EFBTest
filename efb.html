@@ -2,10 +2,10 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <script type="text/javascript" src="https://eisenfaust12.github.io/EFBTest/js/efb.all.js?10062020004148" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://eisenfaust12.github.io/EFBTest/css/efb.all.css?10062020004148">
+        <script type="text/javascript" src="https://eisenfaust12.github.io/EFBTest/js/efb.all.js?10062020214652" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://eisenfaust12.github.io/EFBTest/css/efb.all.css?10062020214652">
     </head>
-    <body class="">
+    <body>
         <div style="width: 1024px; margin: auto;" id="idEfbLayer">
             <div id="dbg"><pre></pre><input type="text"></div>
             <div class="ui secondary eleven menu a320-tab-main">
@@ -21,6 +21,7 @@
                 <a class="item" data-tab="failures" id="failures_tab">FAILURES</a>
                 <a class="item" data-tab="settings">SETTINGS</a>
                 <a class="item" data-tab="states" id="states_tab">STATES</a>
+                <a class="item" data-tab="fap">FAP</a>
             </div>
 
             <div class="active ui bottom attached tab segment a320-tab-segment" data-tab="service">
@@ -1852,7 +1853,267 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+                        <div class="ui bottom attached tab segment" data-tab="fap">
+                <div  id="fap_body" align="center" class="fap_body" onclick="Fap.DisplayTouch();">
+                    <div id="fap_loading" style="display:hidden">
+                        <p style="position:relative;top:45%;text-align:center;">FAP loading<br>
+                            <progress id="progress_loading" value="0.0"></progress>
+                        </p>
+                    </div>
+                    <div id="fap_screensaver" align="center" onclick="Fap.ScreensaverTouch();" style="display:none"><img id="fap_img_screensaver"  src="Resources/FAP/screensaver.jpg" style="display:none;height:100%;width:100%;object-fit: contain"></img></div>
+                    
+                    <!-- Pages -->
+                    <div id="fap_interface_waterwaste" class="fap_interface" style="display:none;" align="left">
+                        <div align="center" style="position:relative;float:left;width:15%;top:15%;left:10%;"><p class="smallfont" align="right">WASTE QUANTITY<br></p><br><img src="Resources/FAP/tank.png"  width="100%" style="float:left;" /><img src="Resources/FAP/Tank_reflection.png"  width="100%" height="93%" style="position:absolute;left:0%;bottom:0%;z-index:1005;" /><img src="Resources/FAP/waste.png"  id="fap_water_wastelevel" width="71%"  style="position:absolute;right:0%;bottom:16%;right:2%; height:10%" /></div>
+                        <div align="center" style="position:relative;float:left;width:15%;top:15%;left:15%;"><p class="smallfont" align="right">WATER QUANTITY<br></p><br><img src="Resources/FAP/tank.png"  width="100%" style="float:left;" /><img src="Resources/FAP/Tank_reflection.png"  width="100%" height="93%" style="position:absolute;left:0%;bottom:0%;z-index:1005;" /><img src="Resources/FAP/water.png" id="fap_water_waterlevel"  width="71%"  style="position:absolute;right:0%;bottom:16%;right:2%; height:61%" /></div>
+                    </div>
+                    
+                    <div id="fap_interface_temperature" class="fap_interface" style="display:none;" align="left">
+                        <div align="center" style="position:absolute;float:right; height:7%;width:6%; top:34%;left:58%;" >
+                            <button border=0 style="position:relative;top:-20%; width:100%;height:100%;color:black;" id="fap_temp_select_box_fwd_button" class="fap_button" width="100%" onclick="Fap.TempToggle(1);"><b>FWD<br>AREA</b></button>					
+                        </div>
+                        <div align="center" style="position:absolute;float:right; height:7%;width:6%; top:65%;left:76%;" >
+                            <button border=0 style="position:relative;top:-20%; width:100%;height:100%;color:black;" id="fap_temp_select_box_fwd_button" class="fap_button" width="100%" onclick="Fap.TempToggle(2);"><b>AFT<br>AREA</b></button>					
+                        </div>
+                        <div align="center" class="fap_bla" id="fap_temp_select_value_box_up" style="float:right; height:50%;	width:29%; top:12%;left:20%;display:none;" ><p class="smallfont" style="position:relative;" id="fap_temp_box_title">FWD AREA</p>
+                            <table border=0 style="width:100%;height:95%">
+                            <tr>
+                                <td width="50%" class="fap_thermometer" align="center" style="position:relative;">
+                                    <div style="position:relative;height:80.7%;width:18%;bottom:0%;">
+                                        <img id="fap_temp_select_value_thermometer" src="Resources/FAP/thermometerliquid.png" style="position:absolute;left:0px;bottom:0px;" height="86%" width="100%"></img><br>
+                                    </div>
+                                    <p style="position:absolute;top:88%;left:34%;" id="fap_temp_select_value_thermometer_label" class="smallfont">24.0°C</p>
+                                </td>
+                                <td width="50%" align="center" style="vertical-align:top;"><p style="position:relative;top:20%;" class="smallfont"><br><br><br>SELECTED TEMPERATURE<br></p>
+                                    <div style="width:40%;background-color:lightblue;height:10%;border:0.1vmin solid black"><p style="position:relative;height:100%;top:20%;color:black;" id="fap_temp_select_value"  class="biggerfont"><b>10.0°C</b></p></div><br>
+                                    <table border=0 style="position:relative; width:39%;height:30%;color:black;">
+                                        <tr align="center"  height="50%">
+                                            <td>
+                                                <button border=0 style="position:relative;background-image:url('Resources/FAP/button_plus.png')" id="fap_temp_select_value_plus" class="fap_button" width="100%" onclick="Fap.TempRequest('+');"></button>
+                                            </td>
+                                        </tr>
+                                        <tr align="center" height="50%">
+                                            <td>
+                                                <button border=0 style="position:relative;background-image:url('Resources/FAP/button_minus.png')" id="fap_temp_select_value_minus" class="fap_button" width="100%" onclick="Fap.TempRequest('-');"></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </table>
+                        
+                        </div>
+                        <div align="center" class="fap_bla" id="fap_temp_select_value_box_down" style="float:right; height:18%;	width:29%; top:67%;left:20%;display:none" >	
+                            <table border=0 style="position:relative; width:20%;height:40%;color:black;">
+                                <tr align="center">
+                                    <td><button border=0 style="position:relative" id="fap_temp_select_reset" class="fap_button" width="100%" onclick="Fap.TempRequest('=');"><b>Reset</b></button></td>	
+                                </tr>
+                            </table>
+                            <p class="smallfont">RESET TO COCKPIT<br>SELECTED TEMPERATURE<br>(ALL AREAS)</p>
+                        </div>
+                    </div>
+                    
+                    <div id="fap_interface_lights"  class="fap_interface" style="display:none;" align="left">
+                        <div align="center" style="position:absolute;float:right; height:7%;width:45%; top:11%;left:35%;" >
+                            <br>
+                            <table border=0 style="position:relative;top:-10%; width:100%;height:100%;color:black;">
+                                    <tr align="left">
+                                        <td>
+                                            <button border=0 style="position:relative" id="fap_light_button_Main" class="fap_button" width="100%" onclick="Fap.LightRequest(0,1);"><b>MAIN</b></button>							
+                                        </td>	
+                                        <td width="11.1%"></td>	
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_AISLE" class="fap_button" width="100%" onclick="Fap.LightRequest(0,2);"><b>AISLE</b></button>						
+                                        </td>
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_WIDW" class="fap_button" width="100%" onclick="Fap.LightRequest(0,3);"><b>WDO</b></button>						
+                                        </td>	
+                                        <td width="11.1%"></td>		
+                                        <td width="11.1%"></td>		
+                                        <td width="11.1%"></td>		
+                                        <td >
+                                        <button border=0 style="position:relative" id="fap_light_button_RLSet" class="fap_button" width="100%" onclick="Fap.LightRequest(0,4);"><b>R/L<br>SET</b></button>
+                                        
+                                        </td>
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_RLReset" class="fap_button" width="100%" onclick="Fap.LightRequest(0,5);"><b>R/L<br>RESET</b></button>
+                                        
+                                        </td>
+                                    </tr>
+                            </table>	
+                        </div>
+                        <div align="center" class="fap_bla" style="float:right; top:30%;left:8%;" >
+                            <p class="smallfont" style="position:relative;top:-12%;">FWD</p>
+                            <br>
+                            <table border=0 style="position:relative; top:-20%; width:100%;height:100%;color:black;">
+                                    <tr align="left">
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_fwd_brt" class="fap_button" width="100%" onclick="Fap.LightRequest(1,3);"><b>BRT</b></button>							
+                                        </td>	
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_fwd_dim1" class="fap_button" width="100%" onclick="Fap.LightRequest(1,2);"><b>DIM 1</b></button>						
+                                        </td>	
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_fwd_dim2" class="fap_button" width="100%" onclick="Fap.LightRequest(1,1);"><b>DIM 2</b></button>						
+                                        </td>						</tr>
+                            </table>	
+                        
+                        </div>
+                        <div align="center" class="fap_bla" style="float:right; top:42%;left:38%;" >
+                            <p class="smallfont" style="position:relative;top:-12%;">CAB</p>
+                            <br>
+                            <table border=0 style="position:relative; top:-20%; width:100%;height:100%;color:black;">
+                                    <tr align="left">
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_cab_brt" class="fap_button" width="100%" onclick="Fap.LightRequest(2,3);"><b>BRT</b></button>							
+                                        </td>	
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_cab_dim1" class="fap_button" width="100%" onclick="Fap.LightRequest(2,2);"><b>DIM 1</b></button>						
+                                        </td>	
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_cab_dim2" class="fap_button" width="100%" onclick="Fap.LightRequest(2,1);"><b>DIM 2</b></button>						
+                                        </td>						
+                                    </tr>
+                            </table>	
+                        </div>
+                        <div align="center" class="fap_bla" style="float:right; top:65%;left:8%;" >
+                            <p class="smallfont" style="position:relative;top:-12%;">AFT</p>
+                            <br>
+                            <table border=0 style="position:relative; top:-20%; width:100%;height:100%;color:black;">
+                                    <tr align="left">
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_aft_brt" class="fap_button" width="100%" onclick="Fap.LightRequest(3,3);"><b>BRT</b></button>							
+                                        </td>	
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_aft_dim1" class="fap_button" width="100%" onclick="Fap.LightRequest(3,2);"><b>DIM 1</b></button>						
+                                        </td>	
+                                        <td>
+                                        <button border=0 style="position:relative" id="fap_light_button_aft_dim2" class="fap_button" width="100%" onclick="Fap.LightRequest(3,1);"><b>DIM 2</b></button>						
+                                        </td>
+                                    </tr>
+                            </table>	
+                        </div>
+                    </div>
+                    
+                    <!-- Menu -->	
+                    <div id="fap_border" align="center" style="visibility:hidden;">
+                    
+                        <table id="fap_container" border=0 style="visibility:hidden;z-index:1001;">
+                            <tr height="9%">
+                                <td width="16%" align="left">	
+                                        <table border=0 style="position:relative; width:45%;height:63%;color:black;">
+                                        <tr align="left">
+                                        <td width="25%"></td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button_caution" class="fap_buttonamber" onclick="Fap.Debug();"><b>CAUT</b></button>
+                                            </td>	
+                                        </tr>
+                                    </table>	
+                                </td>
+                                <td align="center" style="vertical-align:bottom;">	
+                                    <div id="fap_title" class="bigfont">CABIN STATUS</p></div>	
+                                </td>
+                                <td width="16%" align="left" >													</td>
+                            </tr>
+                            <tr height="70%">
+                                <td colspan="3">
+                                    <div id="fap_content_status" align="center" style="height:100%;width:100%">
+                                        <table width="100%" height="100%" border=0 class="smallfont">
+                                            <tr>
+                                                <td id="fap_td_AUDIO" style="visibility:hidden;" align="center" width="20%" class="fap_aircraft"  onclick="Fap.SelectPage(2);"><p class="fap_row_title">AUDIO</p><div style="height:100%;width:100%">	
+                                                        <div style="position:relative; top:17%;width:30%;height:3%;color:#e6e6e6;" class="smallfont">BGM</div><br>
+                                                        <div style="position:relative; top:15%;width:20%;height:7%;color:black;border:0.1vmin solid #000000;background-color:#dbe9f4;" class="smallfont"><p id="fap_audio_playing" style="position:relative;top:27%">X</p></div><br>
+                                                        <div style="position:relative; top:13%;width:30%;height:3%;color:#e6e6e6;" class="smallfont">CHAN.</div><br>
+                                                        <div style="position:relative; top:11%;width:20%;height:13%;color:black;border:0.1vmin solid #000000;background-color:#5157a3;" class="smallfont"><div id="fap_audio_volume" style="position:relative;bottom:0px;height:50%;background-color:#e5f0f6;"></div> </div><br>
+                                                        <div style="position:relative; top:9%;width:30%;height:3%;color:#e6e6e6;" class="smallfont">VOL.</div><br>
+                                                        </div>
+                                                </td>
+                                                
+                                                <td id="fap_td_LIGHTS" style="visibility:hidden;" align="center" width="20%" class="fap_aircraft" onclick="Fap.SelectPage(3);"><p class="fap_row_title">LIGHTS</p><div style="height:100%;width:100%">										
+                                                        <div id="fap_light_fwd" style="position:relative; top:15%;width:22%;height:4%;border:0.1vmin solid #000000;background-color:magenta;color:black;" class="smallfont">FWD</div><br>
+                                                        <div id="fap_light_mid" style="position:relative; top:15%;width:22%;height:60%;border:0.1vmin solid #000000;background-color:magenta;color:black;vertical-align: middle;" class="smallfont"><p style="position:relative;top:45%">CAB</p></div><br>
+                                                        <div id="fap_light_aft" style="position:relative; top:15%;width:22%;height:4%;border:0.1vmin solid #000000;background-color:magenta;color:black;" class="smallfont">AFT</div>
+                                                    </div>
+                                                </td>
+                                                
+                                                <td id="fap_td_DOOR" style="visibility:hidden;" align="center" width="20%" class="fap_aircraft" onclick="Fap.SelectPage(4);"><p class="fap_row_title">DOOR / SLIDES</p></td>
+                                                
+                                                <td id="fap_td_TEMPERATURE" style="visibility:hidden;" align="center" width="20%" class="fap_aircraft" onclick="Fap.SelectPage(5);"><p class="fap_row_title">TEMPERATURE</p><div style="height:100%;width:100%">										
+                                                        <div id="fap_temperature_fwd" style="position:relative; top:15%;width:22%;height:36%;border:0.1vmin solid #000000;background-color:#8ac7db;color:black;" class="smallfont"><p id="fap_temperature_fwd_value" style="position:relative;top:45%">XX.X</p></div><br>
+                                                        <div id="fap_temperature_aft" style="position:relative; top:15%;width:22%;height:36%;border:0.1vmin solid #000000;background-color:#8ac7db;color:black;vertical-align: middle;" class="smallfont"><p id="fap_temperature_aft_value"  style="position:relative;top:45%">XX.X</p></div><br>
+                                                        </div>
+                                                </td>
+                                                
+                                                <td id="fap_td_WATER" style="visibility:hidden;" align="center" width="20%" class="fap_aircraft" onclick="Fap.SelectPage(6);"><p class="fap_row_title">WATER / WASTE</p></td>
+                                                
+                                            </tr>
+                                        </table>
+                                    </div>					
+                                </td>
+                            </tr>
+                            
+                            <tr height="11%">
+                                <td align="left" style="position:relative;">		
+                                    <table border=0 style="position:absolute;bottom:-25%; left:5%; width:30%;height:63%;color:black;">
+                                        <tr align="left">
+                                            <td >
+                                            <button border=0 style="position:relative;visibility:inherit" id="fap_button_screen_off" class="fap_button" onclick="Fap.ShowScreensaver();"><b>SCREEN<br>OFF</b></button>
+                                            </td>							
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button_cabin_ready" class="fap_button" onclick="Fap.CabinReadyRequest();"><b>CABIN<br>READY</b></button>
+                                            </td>						
+                                        </tr>											
+                                    </table>	
+                                </td>
+                                <td align="center" style="vertical-align:bottom;width:70%;position:relative;">
+                                    <div style="position:absolute;background-image:url('Resources/FAP/Menu.png');background-position: bottom center;background-size: 85%;bottom:-17%; background-repeat:no-repeat;height:120%;width:100%;"></div>
+                                    <table border=0 style="position:relative;float:top;bottom:0; width:55%;height:63%;color:black;">
+                                        <tr style="vertical-align:bottom">
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button1" class="fap_button" onclick="Fap.SelectPage(2);"><b>AUDIO</b></button>
+                                            </td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button2" class="fap_button" onclick="Fap.SelectPage(3);"><b>LIGHTS</b></button>
+                                            </td>
+                                            <td >
+                                            <button border=0 style="position:relative" id="fap_button3" class="fap_button" onclick="Fap.SelectPage(4);"><b>DOOR/<br>SLIDES</b></button>
+                                            </td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button4" class="fap_button" onclick="Fap.SelectPage(5);"><b>TEMP</b></button>
+                                            </td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button5" class="fap_button" onclick="Fap.SelectPage(6);"><b>WATER/<br>WASTE</b></button>
+                                            </td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button6" class="fap_button" onclick=""></button>
+                                            </td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button7" class="fap_button" onclick=""></button>
+                                            </td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button8" class="fap_button" onclick=""></button>
+                                            </td>
+                                            <td>
+                                            <button border=0 style="position:relative" id="fap_button9" class="fap_button" onclick=""><b>MAINT</b></button>
+                                            </td>
+                                        </tr>							
+                                    </table>	
+                                </td>
+                                <td align="right" style="position:relative;">
+                                    <table border=0 style="position:absolute;bottom:-25%; right:10%; width:30%;height:63%;color:black;">
+                                        <tr align="left">
+                                            <td>
+                                                <button border=0 style="position:relative" id="fap_button_status" class="fap_button" onclick="Fap.SelectPage(1);"><b>CABIN<br>STATUS</button>
+                                            </td>														
+                                        </tr>											
+                                    </table>				
+                                </td>
+                            </tr>
+                        </table>		
+                    </div>
+                </div>
             </div>
 
         </div>
